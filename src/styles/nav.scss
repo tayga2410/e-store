@@ -1,0 +1,23 @@
+
+.nav{
+    display: flex;
+    justify-content: space-between;
+}
+
+.nav-list {
+    display: flex;
+    justify-content: space-between;
+    gap: 52px;
+}
+
+.nav-item {
+    a {
+        color: #808080;
+
+        &:hover {
+            color: #000000;
+        }
+    }
+
+}
+
