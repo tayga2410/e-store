@@ -1,37 +1,22 @@
+require('dotenv').config();
 const express = require('express');
-const bcrypt = require('bcrypt'); 
-const { Pool } = require('pg');
+const cors = require('cors');
+const path = require('path');
 
-const router = express.Router();
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+const authRoutes = require('./routes/auth');
+const heroRoutes = require('./routes/hero');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use('/api', authRoutes);
+app.use('/api/hero', heroRoutes);
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// Регистрация
-router.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const result = await pool.query(
-            'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email, role',
-            [email, hashedPassword]
-        );
-
-        res.status(201).json({ message: 'User registered successfully', user: result.rows[0] });
-    } catch (err) {
-        if (err.code === '23505') {
-            res.status(400).json({ error: 'Email already exists' });
-        } else {
-            console.error(err);
-            res.status(500).json({ error: 'Registration failed' });
-        }
-    }
-});
-
-module.exports = router;

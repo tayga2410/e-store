@@ -1,0 +1,66 @@
+.hero-section {
+    padding: 20px;
+    background-color: #f5f5f5;
+    font-family: 'Jura', sans-serif;
+}
+
+/* Главный баннер */
+.hero-main-banner {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.hero-main-content {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.shop-now-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #0070f3;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.shop-now-button:hover {
+    background-color: #005bb5;
+}
+
+/* Сетка баннеров */
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.hero-banner {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 150px;
+    border-radius: 10px;
+}
+
+.hero-banner-large {
+    grid-column: span 2; 
+    height: 300px;
+}
+
+.hero-banner-content {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}

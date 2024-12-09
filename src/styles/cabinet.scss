@@ -1,0 +1,80 @@
+.cabinet {
+  padding: 0 160px;
+
+  h1 {
+    text-align: center;
+    margin: 50px auto 20px;
+  }
+
+  h2, h3 {
+    text-align: center;
+    font-size: 26px;
+  }
+
+  .vertical-tabs {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+
+    .tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        background-color: #f0f0f0;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        flex-grow: 0;
+
+        &.active {
+          background-color: #0070f3;
+          color: white;
+        }
+
+        &:hover:not(.active) {
+          background-color: #e0e0e0;
+        }
+      }
+    }
+
+    .tab-content {
+      flex-grow: 1;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #fafafa;
+      min-height: 500px;
+    }
+  }
+}
+
+.cabinet-img {
+  width: 200px;
+  height: 200px;
+}
+
+.cabinet-user-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  li {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.cabinet-users-divider {
+  display: flex;
+  gap: 30px;
+}
