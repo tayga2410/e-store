@@ -7,9 +7,8 @@ export default function Header() {
     <header className="header">
        <div className="header-container">
         <span>Digital Heaven</span>
-        <form action="">
-          <input type="text" />
-          <button type="submit">Search</button>
+        <form className="header-form" action="">
+          <input type="text" placeholder='Search'/>
         </form>
        <Nav />
        <ul className="header-icons">

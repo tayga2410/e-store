@@ -7,7 +7,9 @@
 .nav-list {
     display: flex;
     justify-content: space-between;
-    gap: 52px;
+    gap: 25px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .nav-item {

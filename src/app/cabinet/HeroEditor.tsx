@@ -13,11 +13,18 @@ export default function HeroEditor() {
     const [file, setFile] = useState<File | null>(null);
     const [position, setPosition] = useState<number>(0);
 
+    const fetchBanners = async () => {
+        try {
+            const res = await fetch('http://localhost:4000/api/hero');
+            const data: Banner[] = await res.json();
+            setBanners(data);
+        } catch (err) {
+            console.error('Failed to fetch banners:', err);
+        }
+    };
+
     useEffect(() => {
-        fetch('http://localhost:4000/api/hero')
-            .then((res) => res.json())
-            .then((data: Banner[]) => setBanners(data))
-            .catch((err) => console.error('Failed to fetch banners:', err));
+        fetchBanners();
     }, []);
 
     const handleUpdate = async (id: number, url: string) => {
@@ -30,10 +37,9 @@ export default function HeroEditor() {
                 },
                 body: JSON.stringify({ url }),
             });
-            alert('Banner updated successfully');
+            fetchBanners(); // Обновляем данные с сервера
         } catch (err) {
             console.error(err);
-            alert('Failed to update banner');
         }
     };
 
@@ -57,13 +63,7 @@ export default function HeroEditor() {
             });
 
             if (res.ok) {
-                const newBanner = await res.json();
-                setBanners((prev) => [...prev, newBanner]);
-                alert('Banner uploaded successfully');
-                setFile(null);
-                setPosition(0);
-            } else {
-                alert('Failed to upload banner');
+                await fetchBanners(); // Обновляем данные после загрузки
             }
         } catch (err) {
             console.error('Error uploading banner:', err);
@@ -80,10 +80,7 @@ export default function HeroEditor() {
             });
 
             if (res.ok) {
-                setBanners((prev) => prev.filter((b) => b.id !== id));
-                alert('Banner deleted successfully');
-            } else {
-                alert('Failed to delete banner');
+                await fetchBanners(); // Обновляем данные после удаления
             }
         } catch (err) {
             console.error('Error deleting banner:', err);
@@ -93,26 +90,19 @@ export default function HeroEditor() {
     return (
         <div>
             <h2>Manage Hero Banners</h2>
-            {banners.map((banner) => (
-                <div key={banner.id}>
-                    <img className='cabinet-img' src={banner.url} alt={`Banner ${banner.position}`} />
-                    <input
-                        type="text"
-                        value={banner.url}
-                        onChange={(e) =>
-                            setBanners((prev) =>
-                                prev.map((b) =>
-                                    b.id === banner.id ? { ...b, url: e.target.value } : b
-                                )
-                            )
-                        }
-                        placeholder="Update Banner URL"
-                    />
-                    <button onClick={() => handleUpdate(banner.id, banner.url)}>Update Banner</button>
-                    <button onClick={() => handleDelete(banner.id)}>Delete Banner</button>
-                </div>
-            ))}
-
+            <div className="banners-wrapper">
+                {banners.map((banner) => (
+                    <div className="banner-container" key={banner.id}>
+                        <img className="cabinet-img" src={banner.url} alt={`Banner ${banner.position}`} />
+                        <input
+                            type="text"
+                            defaultValue={banner.url}
+                            onBlur={(e) => handleUpdate(banner.id, e.target.value)}
+                        />
+                        <button onClick={() => handleDelete(banner.id)}>Delete Banner</button>
+                    </div>
+                ))}
+            </div>
             <h3>Upload New Banner</h3>
             <input
                 type="file"

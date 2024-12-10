@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ManageUsers from './ManageUsers';
 import HeroEditor from './HeroEditor';
+import ManageCategories from './ManageCategories';
 
 export default function Cabinet() {
     const router = useRouter();
     const [role, setRole] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'users' | 'banners'>('users');
+    const [activeTab, setActiveTab] = useState<'users' | 'banners' | 'categories'>('users');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -55,8 +56,8 @@ function parseJwt(token: string) {
 }
 
 type CabinetProps = {
-    activeTab: 'users' | 'banners';
-    setActiveTab: (tab: 'users' | 'banners') => void;
+    activeTab: 'users' | 'banners' | 'categories';
+    setActiveTab: (tab: 'users' | 'banners' | 'categories') => void;
 };
 
 function SuperAdminCabinet({ activeTab, setActiveTab }: CabinetProps) {
@@ -75,17 +76,23 @@ function SuperAdminCabinet({ activeTab, setActiveTab }: CabinetProps) {
                 >
                     Manage Banners
                 </button>
+                <button
+                    className={activeTab === 'categories' ? 'active' : ''}
+                    onClick={() => setActiveTab('categories')}
+                >
+                    Manage Categories
+                </button>
             </div>
 
             <div className="tab-content">
                 {activeTab === 'users' && <ManageUsers />}
                 {activeTab === 'banners' && <HeroEditor />}
+                {activeTab === 'categories' && <ManageCategories />}
             </div>
         </div>
     );
 }
 
-// Кабинет редактора с вертикальными табами
 function EditorCabinet({ activeTab, setActiveTab }: CabinetProps) {
     return (
         <div className="vertical-tabs">
@@ -96,10 +103,17 @@ function EditorCabinet({ activeTab, setActiveTab }: CabinetProps) {
                 >
                     Manage Banners
                 </button>
+                <button
+                    className={activeTab === 'categories' ? 'active' : ''}
+                    onClick={() => setActiveTab('categories')}
+                >
+                    Manage Categories
+                </button>
             </div>
 
             <div className="tab-content">
                 {activeTab === 'banners' && <HeroEditor />}
+                {activeTab === 'categories' && <ManageCategories />}
             </div>
         </div>
     );
