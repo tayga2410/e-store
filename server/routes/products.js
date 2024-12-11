@@ -74,7 +74,6 @@ router.post(
       }
   
       try {
-        // Получаем category_type из таблицы categories
         const categoryResult = await pool.query(
           'SELECT type FROM categories WHERE id = $1',
           [category_id]

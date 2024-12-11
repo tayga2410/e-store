@@ -8,7 +8,7 @@ export default function Nav() {
           <Link href="/">Home</Link>
         </li>
         <li className="nav-item">
-          <Link href="/">About</Link>
+          <Link href="/catalog">Catalog</Link>
         </li>
         <li className="nav-item">
           <Link href="/">Contact Us</Link>

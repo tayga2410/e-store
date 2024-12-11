@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const heroRoutes = require('./routes/hero');
 const { router: categoryRoutes } = require('./routes/categories');
 const { router: productRoutes } = require('./routes/products');
+const { router: catalogRouter } = require('./routes/catalog'); 
 
 const app = express();
 
@@ -20,6 +21,11 @@ app.use('/api', authRoutes);
 app.use('/api/hero', heroRoutes);
 app.use ('/api/categories', categoryRoutes)
 app.use ('/api/products', productRoutes)
+app.use('/api/catalog', catalogRouter)
+
+app.get('/', (req, res) => {
+  res.send('Welcome to the server!');
+});
 
 
 const PORT = process.env.PORT || 4000;
@@ -32,3 +38,6 @@ server.on('upgrade', (req, socket, head) => {
       wss.emit('connection', ws, req);
     });
   });
+
+
+  
