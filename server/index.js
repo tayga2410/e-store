@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const wss = require('./wss');
 
 const authRoutes = require('./routes/auth');
 const heroRoutes = require('./routes/hero');
-const { router: categoryRoutes, wss } = require('./routes/categories'); 
+const { router: categoryRoutes } = require('./routes/categories');
+const { router: productRoutes } = require('./routes/products');
 
 const app = express();
 
@@ -16,7 +18,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api', authRoutes);
 app.use('/api/hero', heroRoutes);
-app.use('/api/categories', categoryRoutes);
+app.use ('/api/categories', categoryRoutes)
+app.use ('/api/products', productRoutes)
+
 
 const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {

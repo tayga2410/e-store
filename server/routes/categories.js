@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const { Pool } = require('pg');
-const WebSocket = require('ws');
+const wss = require('../wss');
 const { authenticateToken, authorizeRole } = require('../middleware/auth');
 
 const router = express.Router();
@@ -13,31 +13,32 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-const wss = new WebSocket.Server({ noServer: true });
-
 wss.on('connection', (ws) => {
   console.log('WebSocket client connected');
-
-  pool.query('SELECT * FROM categories ORDER BY id')
-    .then((result) => {
-      const categories = result.rows;
-      ws.send(JSON.stringify({ type: 'categories', data: categories }));
-    })
-    .catch((err) => {
-      console.error('Error fetching categories on connection:', err);
-    });
+  sendCategories(ws);
 
   ws.on('close', () => {
     console.log('WebSocket client disconnected');
   });
 });
 
+function sendCategories(ws) {
+  pool.query('SELECT * FROM categories ORDER BY id')
+    .then((result) => {
+      const categories = result.rows;
+      ws.send(JSON.stringify({ type: 'categories', data: categories }));
+    })
+    .catch((err) => {
+      console.error('Error fetching categories:', err);
+    });
+}
+
 function broadcastCategories() {
   pool.query('SELECT * FROM categories ORDER BY id')
     .then((result) => {
       const categories = result.rows;
       wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState === client.OPEN) {
           client.send(JSON.stringify({ type: 'categories', data: categories }));
         }
       });
@@ -70,9 +71,11 @@ router.post('/upload', authenticateToken, authorizeRole('editor', 'superadmin'),
     broadcastCategories();
     res.status(201).json({ message: 'Category created successfully' });
   } catch (err) {
-    console.error('Failed to create category:', err);
-    res.status(500).json({ error: 'Failed to create category' });
-  }
+    console.error('Failed to create product:', err.message || err);
+    res.status(500).json({ error: 'Failed to create product' });
+}
+
+  
 });
 
 router.delete('/:id', authenticateToken, authorizeRole('editor', 'superadmin'), async (req, res) => {
@@ -91,4 +94,4 @@ router.delete('/:id', authenticateToken, authorizeRole('editor', 'superadmin'), 
   }
 });
 
-module.exports = { router, wss };
+module.exports = { router };
