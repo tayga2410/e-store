@@ -50,7 +50,7 @@ export default function ManageCategories() {
 
       if (res.ok) {
         alert('Category created successfully');
-        fetchCategories(); // Обновляем список категорий
+        fetchCategories(); 
       } else {
         const error = await res.json();
         alert(`Failed to create category: ${error.message}`);
@@ -78,7 +78,7 @@ export default function ManageCategories() {
 
       if (res.ok) {
         alert('Category deleted successfully');
-        fetchCategories(); // Обновляем список категорий
+        fetchCategories(); 
       } else {
         const error = await res.json();
         alert(`Failed to delete category: ${error.message}`);

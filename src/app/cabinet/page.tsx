@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import ManageUsers from './ManageUsers';
 import HeroEditor from './HeroEditor';
 import ManageCategories from './ManageCategories';
-import ManageProducts from './ManageProducts'; // Новый компонент для продуктов
+import ManageProducts from './ManageProducts';
+import CartPage from '@/app/cart/page'; // Подключаем компонент корзины
 
 export default function Cabinet() {
     const router = useRouter();
@@ -27,6 +28,12 @@ export default function Cabinet() {
         }
 
         setRole(userRole);
+
+        // Если роль пользователя — user, перенаправляем в корзину
+        if (userRole === 'user') {
+            router.push('/cart'); // Убедитесь, что этот маршрут существует
+        }
+
         setLoading(false);
     }, [router]);
 
@@ -43,7 +50,6 @@ export default function Cabinet() {
             {role === 'editor' && (
                 <EditorCabinet activeTab={activeTab} setActiveTab={setActiveTab} />
             )}
-            {role === 'user' && <UserCabinet />}
         </div>
     );
 }
@@ -66,25 +72,25 @@ function SuperAdminCabinet({ activeTab, setActiveTab }: CabinetProps) {
         <div className="vertical-tabs">
             <div className="tabs">
                 <button
-                    className={activeTab === 'users' ? 'active' : ''}
+                    className={activeTab === 'users' ? 'active' : ''} 
                     onClick={() => setActiveTab('users')}
                 >
                     Manage Users
                 </button>
                 <button
-                    className={activeTab === 'banners' ? 'active' : ''}
+                    className={activeTab === 'banners' ? 'active' : ''} 
                     onClick={() => setActiveTab('banners')}
                 >
                     Manage Banners
                 </button>
                 <button
-                    className={activeTab === 'categories' ? 'active' : ''}
+                    className={activeTab === 'categories' ? 'active' : ''} 
                     onClick={() => setActiveTab('categories')}
                 >
                     Manage Categories
                 </button>
                 <button
-                    className={activeTab === 'products' ? 'active' : ''}
+                    className={activeTab === 'products' ? 'active' : ''} 
                     onClick={() => setActiveTab('products')}
                 >
                     Manage Products
@@ -106,19 +112,19 @@ function EditorCabinet({ activeTab, setActiveTab }: CabinetProps) {
         <div className="vertical-tabs">
             <div className="tabs">
                 <button
-                    className={activeTab === 'banners' ? 'active' : ''}
+                    className={activeTab === 'banners' ? 'active' : ''} 
                     onClick={() => setActiveTab('banners')}
                 >
                     Manage Banners
                 </button>
                 <button
-                    className={activeTab === 'categories' ? 'active' : ''}
+                    className={activeTab === 'categories' ? 'active' : ''} 
                     onClick={() => setActiveTab('categories')}
                 >
                     Manage Categories
                 </button>
                 <button
-                    className={activeTab === 'products' ? 'active' : ''}
+                    className={activeTab === 'products' ? 'active' : ''} 
                     onClick={() => setActiveTab('products')}
                 >
                     Manage Products
@@ -130,15 +136,6 @@ function EditorCabinet({ activeTab, setActiveTab }: CabinetProps) {
                 {activeTab === 'categories' && <ManageCategories />}
                 {activeTab === 'products' && <ManageProducts />}
             </div>
-        </div>
-    );
-}
-
-function UserCabinet() {
-    return (
-        <div>
-            <h2>User Cabinet</h2>
-            <p>View your account details.</p>
         </div>
     );
 }

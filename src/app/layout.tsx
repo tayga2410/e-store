@@ -1,6 +1,11 @@
 import { ReactNode } from 'react';
 import '../styles/main.scss';
 import Header from './components/Header'
+import { CartProvider } from './context/CartContext';
+import { WebSocketProvider } from './context/WebSocketProvider';
+import { ProductProvider } from './context/ProductContext';
+import { CategoryProvider } from './context/CategoryContext';
+import { WishlistProvider } from './context/WishlistContext';
 
 export const metadata = {
     title: 'E-store for you',
@@ -17,8 +22,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <body>
                 <Header />
                 <main>
-                    {children}
+                    <WebSocketProvider>
+                        <CartProvider>
+                            <WishlistProvider>
+                                <ProductProvider>
+                                    <CategoryProvider>{children}</CategoryProvider>
+                                </ProductProvider>
+                            </WishlistProvider>
+                        </CartProvider>
+                    </WebSocketProvider>
                 </main>
+
             </body>
         </html>
     );

@@ -12,6 +12,9 @@ export default function Header() {
         </form>
        <Nav />
        <ul className="header-icons">
+       <li>
+          <Link href="/wishlist"><Image src="/header/wishlist-icon.svg" alt="cart" width={25} height={22}></Image></Link>
+        </li>
         <li>
           <Link href="/cart"><Image src="/header/cart-icon.svg" alt="cart" width={25} height={22}></Image></Link>
         </li>

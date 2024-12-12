@@ -1,0 +1,67 @@
+.wishlist {
+    padding: 50px 160px;
+  
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+  
+    &__wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+  
+    &__item {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+      &-image {
+        max-width: 100%;
+        border-radius: 4px;
+      }
+  
+      &-details {
+        margin-top: 10px;
+  
+        &-title {
+          font-size: 18px;
+          font-weight: 600;
+        }
+  
+        &-price {
+          font-size: 16px;
+          color: #777;
+          margin: 10px 0;
+        }
+  
+        &-remove {
+          background-color: red;
+          color: white;
+          padding: 5px 10px;
+          border: none;
+          cursor: pointer;
+          border-radius: 4px;
+  
+          &:hover {
+            background-color: darkred;
+          }
+        }
+      }
+    }
+  }
+
+.wishlist-button {
+  padding: 0;
+  margin: 0;
+  align-self: flex-end;
+
+  &::after {
+    display: none;
+  }
+}
+  

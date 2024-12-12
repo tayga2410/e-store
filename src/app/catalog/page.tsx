@@ -1,169 +1,102 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useCart } from '@/app/context/CartContext';
+import { useWishlist } from '@/app/context/WishlistContext';
+import Breadcrumb from '@/app/components/BreadCrumb';
 
 type Product = {
     id: number;
     name: string;
     price: number;
     image_url: string;
-    category_type: string;
-};
-
-type Category = {
-    id: number;
-    name: string;
-    type: string;
+    category_id: number;
 };
 
 export default function Catalog() {
+    const searchParams = useSearchParams();
+    const categoryId = searchParams.get('category');
+    const categoryName = searchParams.get('categoryName') || 'Catalog';
+    const { addToCart } = useCart();
+    const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [filters, setFilters] = useState({
-        category: '',
-        sort: '',
-        minPrice: '',
-        maxPrice: '',
-    });
-    const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         fetchProducts();
-        fetchCategories();
-    }, [filters, pagination.page]);
+    }, [categoryId]);
 
     const fetchProducts = async () => {
         setIsLoading(true);
-
-        const queryParams = new URLSearchParams({
-            category: filters.category,
-            sort: filters.sort,
-            minPrice: filters.minPrice,
-            maxPrice: filters.maxPrice,
-            page: pagination.page.toString(),
-        });
-
         try {
-            const res = await fetch(`http://localhost:4000/api/catalog?${queryParams.toString()}`);
+            const res = await fetch(`http://localhost:4000/api/products?category=${categoryId || ''}`);
             const data = await res.json();
-
-            console.log('Raw data from API:', data);
-            console.log('Current category filter:', filters.category);
-
-
-
-            if (Array.isArray(data)) {
-                setProducts(data);
-            } else if (data.products && Array.isArray(data.products)) {
-                setProducts(data.products);
-            } else {
-                console.warn('Unexpected data format:', data);
-                setProducts([]);
-            }
-
-            setPagination((prev) => ({
-                ...prev,
-                totalPages: data.totalPages || 1,
-            }));
+            setProducts(data);
         } catch (err) {
-            console.error('Failed to fetch products:', err);
-            setProducts([]);
+            console.error('Error fetching products:', err);
         } finally {
             setIsLoading(false);
         }
     };
 
-
-    const fetchCategories = async () => {
-        try {
-            const res = await fetch('http://localhost:4000/api/categories');
-            const data = await res.json();
-            console.log('Fetched categories:', data);
-            setCategories(data || []);
-        } catch (err) {
-            console.error('Failed to fetch categories:', err);
-        }
+    const handleAddToCart = (product: Product) => {
+        addToCart({
+            product_id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            image_url: product.image_url,
+        });
     };
 
-    const handlePageChange = (newPage: number) => {
-        if (newPage >= 1 && newPage <= pagination.totalPages) {
-            console.log('Page change:', newPage);
-            setPagination((prev) => ({ ...prev, page: newPage }));
+    const handleWishlistToggle = (product: Product) => {
+        const isInWishlist = wishlist.some((item) => item.product_id === product.id);
+
+        if (isInWishlist) {
+            removeFromWishlist(product.id);
+        } else {
+            addToWishlist({
+                id: Date.now(),
+                product_id: product.id,
+                name: product.name,
+                price: product.price,
+                image_url: product.image_url,
+            });
         }
     };
 
     return (
         <section className="catalog">
-            <h1>Catalog</h1>
+            <Breadcrumb />
 
-            <div className="filters">
-                <select
-                    value={filters.category}
-                    onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                >
-                    <option value="">All Categories</option>
-                    {categories.map((category) => (
-                        <option key={category.id} value={category.type}>
-                            {category.name}
-                        </option>
-                    ))}
-                </select>
-
-                <input
-                    type="number"
-                    placeholder="Min Price"
-                    value={filters.minPrice}
-                    onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                />
-                <input
-                    type="number"
-                    placeholder="Max Price"
-                    value={filters.maxPrice}
-                    onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                />
-                <select
-                    value={filters.sort}
-                    onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
-                >
-                    <option value="">Default</option>
-                    <option value="price_asc">Price: Low to High</option>
-                    <option value="price_desc">Price: High to Low</option>
-                    <option value="new">New Arrivals</option>
-                </select>
-            </div>
-
-            <div className="products">
+            <div className="products__wrapper">
                 {isLoading ? (
                     <p>Loading...</p>
                 ) : products.length > 0 ? (
                     products.map((product) => (
-                        <div key={product.id} className="product-card">
-                            <img src={product.image_url || ''} alt={product.name || 'No Name'} />
-                            <h3>{product.name || 'Unnamed Product'}</h3>
-                            <p>Price: ${product.price || '0.00'}</p>
-                            <p>Category: {product.category_type || 'Unknown'}</p>
+                        <div key={product.id} className="products__card">
+                            <button
+                                onClick={() => handleWishlistToggle(product)}
+                                className="wishlist-button"
+                            >
+                                <img
+                                    src={wishlist.some((item) => item.product_id === product.id) ? '/like-red.svg' : '/like.svg'}
+                                    alt="Wishlist Icon"
+                                    width={24}
+                                    height={24}
+                                />
+                            </button>
+                            <img className="products__card-image" src={product.image_url || ''} alt={product.name || 'No Name'} />
+                            <h3 className="products__card-title">{product.name || 'Unnamed Product'}</h3>
+                            <p className="products__card-price">Price: ${product.price || '0.00'}</p>
+                            <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+
                         </div>
                     ))
                 ) : (
                     <p>No products available for this category.</p>
                 )}
-            </div>
-
-
-            <div className="pagination">
-                <button onClick={() => handlePageChange(pagination.page - 1)} disabled={pagination.page === 1}>
-                    Previous
-                </button>
-                <span>
-                    Page {pagination.page} of {pagination.totalPages}
-                </span>
-                <button
-                    onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page === pagination.totalPages}
-                >
-                    Next
-                </button>
             </div>
         </section>
     );

@@ -49,14 +49,22 @@ function broadcastProducts() {
 }
 
 router.get('/', async (req, res) => {
+  const { category } = req.query;
+
   try {
-    const result = await pool.query('SELECT * FROM products ORDER BY id');
+    const query = category
+      ? 'SELECT * FROM products WHERE category_id = $1'
+      : 'SELECT * FROM products';
+    const values = category ? [category] : [];
+
+    const result = await pool.query(query, values);
     res.json(result.rows);
   } catch (err) {
     console.error('Failed to fetch products:', err);
     res.status(500).json({ error: 'Failed to fetch products' });
   }
 });
+
 
 router.post(
     '/upload',
@@ -101,19 +109,37 @@ router.post(
   
   router.put('/:id', authenticateToken, authorizeRole('editor', 'superadmin'), async (req, res) => {
     const { id } = req.params;
-    const { is_bestseller, is_new, is_featured } = req.body;
+    const { name, price, category_id, is_bestseller, is_new, is_featured } = req.body;
   
     try {
       const updates = [];
       const values = [];
+  
+      if (name !== undefined) {
+        updates.push('name = $' + (updates.length + 1));
+        values.push(name);
+      }
+  
+      if (price !== undefined) {
+        updates.push('price = $' + (updates.length + 1));
+        values.push(price);
+      }
+  
+      if (category_id !== undefined) {
+        updates.push('category_id = $' + (updates.length + 1));
+        values.push(category_id);
+      }
+  
       if (is_bestseller !== undefined) {
         updates.push('is_bestseller = $' + (updates.length + 1));
         values.push(is_bestseller);
       }
+  
       if (is_new !== undefined) {
         updates.push('is_new = $' + (updates.length + 1));
         values.push(is_new);
       }
+  
       if (is_featured !== undefined) {
         updates.push('is_featured = $' + (updates.length + 1));
         values.push(is_featured);
@@ -133,6 +159,7 @@ router.post(
       res.status(500).json({ error: 'Failed to update product' });
     }
   });
+  
   
   
 
